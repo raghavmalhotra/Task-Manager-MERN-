@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema({
   ],
 })
 
+userSchema.virtual('tasks', {
+  ref: 'Task',
+  localField: '_id',
+  foreignField: 'owner',
+})
+
 // creating a method for the user (instance methods) for logging in a user
 userSchema.methods.generateAuthToken = async function () {
   const user = this // this is the user that is logged in

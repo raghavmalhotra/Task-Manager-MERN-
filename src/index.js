@@ -4,6 +4,7 @@ require('./db/mongoose')
 // loading routers
 const userRouter = require('./routers/user')
 const taskRouter = require('./routers/task')
+const User = require('./models/user')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -15,18 +16,18 @@ app.use(taskRouter)
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
+
+  const Task = require('./models/task')
+  const User = require('./models/user')
 })
+const main = async () => {
+  const user = await User.findById('62ec28021606162881684338')
 
-// const jwt = require('jsonwebtoken')
-// const myFunction = async () => {
-//   const token = jwt.sign({ _id: 'abc123' }, 'hithisisrandomsentence')
-//   return token
-// }
+  await user.populate('tasks').execPopulate()
+  console.log(user.tasks)
+}
 
-// myFunction()
-//   .then((result) => {
-//     console.log(result)
-//   })
-//   .catch((err) => {
-//     console.log(err)
-//   })
+main().catch((err) => {
+  console.log(err)
+})
+//   }
