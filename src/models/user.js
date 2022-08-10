@@ -60,7 +60,7 @@ userSchema.virtual('tasks', {
 // creating a method for the user (instance methods) for logging in a user
 userSchema.methods.generateAuthToken = async function () {
   const user = this // this is the user that is logged in
-  const token = jwt.sign({ _id: user._id.toString() }, 'hithisisrandomsentence') // this is the secret
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET) // this is the secret
   user.tokens = user.tokens.concat({ token }) // concat is used to add a new element to an array
   await user.save() // saving the user
   return token // returning the token
