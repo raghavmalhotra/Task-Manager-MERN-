@@ -3,6 +3,7 @@ const auth = require('../middlewares/auth')
 const router = express.Router()
 const User = require('../models/user')
 const multer = require('multer')
+const sharp = require('sharp')
 
 // creating a user
 router.post('/users', async (req, res) => {
@@ -115,7 +116,11 @@ router.post(
   auth,
   upload.single('avatar'),
   async (req, res) => {
-    req.user.avatar = req.file.buffer
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .png()
+      .toBuffer()
+    req.user.avatar = buffer
     await req.user.save()
     res.send({ success: true })
   },
