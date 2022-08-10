@@ -6,52 +6,50 @@ const Task = require('./task')
 // mongoose.connect('mongodb://localhost:27017/task-manager-api')
 
 // creating a schema for the user
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    age: {
-      type: Number,
-      default: 0,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('invalid email')
-        }
-      },
-    },
-    password: {
-      type: String,
-      required: true,
-      trim: true,
-      minLength: 7,
-      validate(value) {
-        if (value.includes('password')) {
-          throw new Error('password cannot be password. I mean come on!')
-        }
-      },
-    },
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  {
-    timestamps: true,
-  }
-)
+  age: {
+    type: Number,
+    default: 0,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    validate(value) {
+      if (!validator.isEmail(value)) {
+        throw new Error('invalid email')
+      }
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: 7,
+    validate(value) {
+      if (value.includes('password')) {
+        throw new Error('password cannot be password. I mean come on!')
+      }
+    },
+  },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  avatar: {
+    type: Buffer,
+  },
+})
 
 userSchema.virtual('tasks', {
   ref: 'Task',
@@ -105,11 +103,11 @@ userSchema.pre('save', async function (next) {
   next()
 })
 
-// middleware to delete user tasks when user is deleted
-
 userSchema.pre('remove', async function (next) {
   const user = this
-  await Task.deleteMany({ owner: user._id })
+  //console.log(user, user._id)
+  await Task.deleteMany({ Owner: user._id })
+
   next()
 })
 

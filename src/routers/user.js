@@ -2,6 +2,7 @@ const express = require('express')
 const auth = require('../middlewares/auth')
 const router = express.Router()
 const User = require('../models/user')
+const multer = require('multer')
 
 // creating a user
 router.post('/users', async (req, res) => {
@@ -91,6 +92,62 @@ router.delete('/users/me', auth, async (req, res) => {
     res.send(req.user)
   } catch (e) {
     res.status(400).send(e)
+  }
+})
+
+// uploading a profile picture
+// multer is a middleware that is used to handle file uploads
+
+const upload = multer({
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image'))
+    }
+    cb(undefined, true)
+  },
+})
+
+router.post(
+  '/users/me/avatar',
+  auth,
+  upload.single('avatar'),
+  async (req, res) => {
+    req.user.avatar = req.file.buffer
+    await req.user.save()
+    res.send({ success: true })
+  },
+  (err, req, res, next) => {
+    res.status(400).send({ error: err.message })
+  }
+)
+
+// deleting a profile picture
+router.delete(
+  '/users/me/avatar',
+  auth,
+  async (req, res) => {
+    req.user.avatar = undefined
+    await req.user.save()
+    res.send({ message: 'avatar deleted' })
+  },
+  (err, req, res, next) => {
+    res.status(400).send({ error: err.message })
+  }
+)
+// getting a profile picture
+router.get('/users/:id/avatar', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+    if (!user || !user.avatar) {
+      throw new Error()
+    }
+    res.set('Content-Type', 'image/png')
+    res.send(user.avatar)
+  } catch (e) {
+    res.status(404).send()
   }
 })
 
