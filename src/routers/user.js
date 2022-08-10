@@ -120,8 +120,7 @@ router.post(
       .resize({ width: 250, height: 250 })
       .png()
       .toBuffer()
-    req.user.avatar = buffer
-    await req.user.save()
+    req.user.avatar = await req.user.save()
     res.send({ success: true })
   },
   (err, req, res, next) => {
