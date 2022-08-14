@@ -1,7 +1,7 @@
 const { MongoClient, ObjectID } = require('mongodb')
 
 const dbName = 'task-manager'
-const url = process.env.MONGODB_URI || `mongodb://localhost:27017/${dbName}`
+const url = process.env.MONGODB_URI
 
 MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   if (err) {
